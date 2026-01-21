@@ -1,207 +1,224 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>NewWiki</title>
+<meta charset="UTF-8">
+<title>NewWiki</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Для Telegram Mini App -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Шрифт для логотипа -->
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #1a1f2b, #3a6073);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-    }
+<style>
+  /* Общие стили */
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #1a1f2b, #3a6073);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
 
-    .app {
-      width: 95%;
-      max-width: 900px;
-      padding: 20px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-    }
+  .app {
+    width: 95%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
 
-    h1 {
-      text-align: center;
-      margin-top: 0;
-    }
+  /* Шапка */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
 
-    .search-bar {
-      display: flex;
-      gap: 10px;
-    }
+  .logo-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+  }
 
-    input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-    }
+  .logo-text {
+    font-family: 'Pacifico', cursive;
+    font-size: 32px;
+    margin: 0;
+  }
 
-    button {
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      background: rgba(255,255,255,0.25);
-      color: #fff;
-      font-size: 16px;
-    }
+  input#searchInput {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+  }
 
-    #results {
-      margin-top: 15px;
-    }
+  /* Результаты поиска */
+  .results {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-    .result-item {
-      padding: 10px;
-      margin-bottom: 6px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.12);
-      cursor: pointer;
-    }
+  .result-item {
+    padding: 12px;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
 
-    .result-item:hover {
-      background: rgba(255,255,255,0.25);
-    }
+  .result-item:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+  }
 
-    #article {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 15px;
-      background: rgba(0,0,0,0.25);
-      max-height: 55vh;
-      overflow-y: auto;
-    }
+  .result-item p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #e0e0e0;
+  }
 
-    #article img {
-      max-width: 100%;
-      border-radius: 10px;
-    }
+  /* Открытая статья */
+  #article {
+    margin-top: 10px;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.25);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
 
-    #article table {
-      width: 100%;
-      overflow-x: auto;
-      display: block;
-    }
+  #article img {
+    max-width: 100%;
+    border-radius: 10px;
+  }
 
-    #article a {
-      color: #8fd3ff;
-      text-decoration: none;
-    }
+  #article a {
+    color: #8fd3ff;
+    text-decoration: none;
+  }
 
-    .back-btn {
-      margin-top: 10px;
-      display: none;
-    }
-  </style>
+  /* Кнопка назад */
+  #backBtn {
+    display: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+</style>
 </head>
 <body>
 
 <div class="app">
-  <h1>NewWiki</h1>
+  <!-- Шапка с логотипом -->
+  <header>
+    <img src="A_logo_for_a_project_named_&quot;NewWiki&quot;_features_the_.png" alt="NewWiki Logo" class="logo-img">
+    <h1 class="logo-text">NewWiki</h1>
+    <input type="text" id="searchInput" placeholder="🔍 Найти статью...">
+  </header>
 
-  <div class="search-bar">
-    <input id="searchInput" type="text" placeholder="Поиск статьи...">
-    <button id="searchBtn">Найти</button>
-  </div>
+  <!-- Результаты поиска -->
+  <div id="results" class="results"></div>
 
-  <div id="results"></div>
+  <button id="backBtn">← Назад</button>
 
-  <button id="backBtn" class="back-btn">← Назад</button>
-
+  <!-- Статья -->
   <div id="article"></div>
 </div>
 
 <script>
-  const tg = window.Telegram?.WebApp;
-  tg?.expand();
+const tg = window.Telegram?.WebApp;
+tg?.expand();
 
-  const searchInput = document.getElementById("searchInput");
-  const searchBtn = document.getElementById("searchBtn");
-  const resultsDiv = document.getElementById("results");
-  const articleDiv = document.getElementById("article");
-  const backBtn = document.getElementById("backBtn");
+const searchInput = document.getElementById("searchInput");
+const resultsDiv = document.getElementById("results");
+const articleDiv = document.getElementById("article");
+const backBtn = document.getElementById("backBtn");
 
-  searchBtn.addEventListener("click", searchArticles);
-  searchInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") searchArticles();
-  });
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") searchArticles();
+});
 
-  backBtn.addEventListener("click", () => {
-    articleDiv.innerHTML = "";
-    backBtn.style.display = "none";
-  });
+backBtn.addEventListener("click", () => {
+  articleDiv.innerHTML = "";
+  backBtn.style.display = "none";
+});
 
-  async function searchArticles() {
-    const query = searchInput.value.trim();
-    if (!query) return;
+async function searchArticles() {
+  const query = searchInput.value.trim();
+  if (!query) return;
 
-    resultsDiv.innerHTML = "Поиск...";
-    articleDiv.innerHTML = "";
-    backBtn.style.display = "none";
+  resultsDiv.innerHTML = "Поиск...";
+  articleDiv.innerHTML = "";
+  backBtn.style.display = "none";
 
-    const url = `https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`;
+  const url = `https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`;
 
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
 
-      resultsDiv.innerHTML = "";
-
-      if (!data.query.search.length) {
-        resultsDiv.innerHTML = "Ничего не найдено";
-        return;
-      }
-
-      data.query.search.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "result-item";
-        div.textContent = item.title;
-
-        div.addEventListener("click", () => loadArticle(item.title));
-
-        resultsDiv.appendChild(div);
-      });
-    } catch (e) {
-      resultsDiv.innerHTML = "Ошибка загрузки";
+    resultsDiv.innerHTML = "";
+    if (!data.query.search.length) {
+      resultsDiv.innerHTML = "Ничего не найдено";
+      return;
     }
+
+    data.query.search.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "result-item";
+      div.innerHTML = `<strong>📄 ${item.title}</strong><p>${item.snippet.replace(/<[^>]+>/g,'')}</p>`;
+      div.addEventListener("click", () => loadArticle(item.title));
+      resultsDiv.appendChild(div);
+    });
+
+  } catch (e) {
+    resultsDiv.innerHTML = "Ошибка загрузки";
   }
+}
 
-  async function loadArticle(title) {
-    articleDiv.innerHTML = "Загрузка статьи...";
-    backBtn.style.display = "block";
+async function loadArticle(title) {
+  articleDiv.innerHTML = "Загрузка статьи...";
+  backBtn.style.display = "block";
 
-    const url = `https://ru.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(title)}&prop=text&format=json&origin=*`;
+  const url = `https://ru.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(title)}&prop=text&format=json&origin=*`;
 
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
 
-      const html = data.parse.text["*"];
+    const html = data.parse.text["*"];
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
 
-      const temp = document.createElement("div");
-      temp.innerHTML = html;
+    temp.querySelectorAll("script, style, .mw-editsection, .reference, sup").forEach(el => el.remove());
+    temp.querySelectorAll("a").forEach(a => a.removeAttribute("href"));
 
-      temp.querySelectorAll("script, style, .mw-editsection, .reference, sup").forEach(el => el.remove());
-      temp.querySelectorAll("a").forEach(a => a.removeAttribute("href"));
-
-      articleDiv.innerHTML = temp.innerHTML;
-    } catch (e) {
-      articleDiv.innerHTML = "Ошибка загрузки статьи";
-    }
+    articleDiv.innerHTML = temp.innerHTML;
+  } catch (e) {
+    articleDiv.innerHTML = "Ошибка загрузки статьи";
   }
+}
 </script>
 
 </body>
