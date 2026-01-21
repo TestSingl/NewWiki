@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Glass Wiki</title>
+  <title>NewWiki</title>
 
   <!-- Для Telegram Mini App -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -85,7 +85,6 @@
       overflow-y: auto;
     }
 
-    /* Чистим стили википедии */
     #article img {
       max-width: 100%;
       border-radius: 10px;
@@ -111,7 +110,7 @@
 <body>
 
 <div class="app">
-  <h1>Glass Wiki</h1>
+  <h1>NewWiki</h1>
 
   <div class="search-bar">
     <input id="searchInput" type="text" placeholder="Поиск статьи...">
@@ -126,7 +125,6 @@
 </div>
 
 <script>
-  // Telegram WebApp
   const tg = window.Telegram?.WebApp;
   tg?.expand();
 
@@ -196,13 +194,8 @@
       const temp = document.createElement("div");
       temp.innerHTML = html;
 
-      // Убираем мусор
       temp.querySelectorAll("script, style, .mw-editsection, .reference, sup").forEach(el => el.remove());
-
-      // Убираем ссылки, чтобы не уводили с аппки
-      temp.querySelectorAll("a").forEach(a => {
-        a.removeAttribute("href");
-      });
+      temp.querySelectorAll("a").forEach(a => a.removeAttribute("href"));
 
       articleDiv.innerHTML = temp.innerHTML;
     } catch (e) {
@@ -212,4 +205,4 @@
 </script>
 
 </body>
-</html>
+</html>      
