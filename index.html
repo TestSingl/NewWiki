@@ -5,14 +5,31 @@
 <title>NewWiki</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Шрифты -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
 
 <style>
+/* ===== АНИМАЦИИ ===== */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===== ОСНОВА ===== */
 body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
-  background: #080808; /* AMOLED чёрный */
+  background: #080808;
   color: #fff;
   display: flex;
   justify-content: center;
@@ -25,10 +42,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-top: 40px; /* опущено вниз */
+  margin-top: 40px;
 }
 
-/* Шапка */
+/* ===== ШАПКА ===== */
 header {
   display: flex;
   flex-direction: column;
@@ -38,7 +55,7 @@ header {
   border-radius: 22px;
   background: rgba(255,255,255,0.06);
   backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  animation: fadeUp 0.6s ease;
 }
 
 .logo-img {
@@ -62,9 +79,14 @@ header {
   font-size: 16px;
   background: rgba(255,255,255,0.10);
   color: #fff;
+  transition: background 0.3s;
 }
 
-/* Результаты */
+#searchInput:focus {
+  background: rgba(255,255,255,0.14);
+}
+
+/* ===== РЕЗУЛЬТАТЫ ===== */
 .results {
   display: flex;
   flex-direction: column;
@@ -77,12 +99,17 @@ header {
   background: rgba(255,255,255,0.06);
   backdrop-filter: blur(10px);
   cursor: pointer;
-  transition: background 0.25s, transform 0.2s;
+  animation: fadeUp 0.4s ease;
+  transition: transform 0.2s, background 0.25s;
 }
 
 .result-item:hover {
   background: rgba(255,255,255,0.10);
   transform: translateY(-2px);
+}
+
+.result-item:active {
+  transform: scale(0.98);
 }
 
 .result-item p {
@@ -91,7 +118,7 @@ header {
   color: #ccc;
 }
 
-/* Кнопка назад */
+/* ===== КНОПКА НАЗАД ===== */
 #backBtn {
   display: none;
   align-self: flex-start;
@@ -102,15 +129,17 @@ header {
   color: #fff;
   font-size: 15px;
   cursor: pointer;
+  animation: fadeIn 0.3s ease;
 }
 
-/* Открытая статья */
+/* ===== СТАТЬЯ ===== */
 #article {
   padding: 20px;
   border-radius: 20px;
   background: rgba(0,0,0,0.45);
   max-height: 60vh;
   overflow-y: auto;
+  animation: fadeUp 0.4s ease;
 }
 
 #article img {
@@ -177,9 +206,10 @@ async function searchArticles() {
       return;
     }
 
-    data.query.search.forEach(item => {
+    data.query.search.forEach((item, i) => {
       const div = document.createElement("div");
       div.className = "result-item";
+      div.style.animationDelay = `${i * 0.05}s`;
       div.innerHTML = `<strong>${item.title}</strong>
                        <p>${item.snippet.replace(/<[^>]+>/g,'')}</p>`;
       div.onclick = () => loadArticle(item.title);
